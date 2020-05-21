@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_java-ci-pipeline" default="compile.module.java-ci-pipeline">
+  <dirname property="module.java-ci-pipeline.basedir" file="${ant.file.module_java-ci-pipeline}"/>
+  
+  <property name="module.jdk.home.java-ci-pipeline" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.java-ci-pipeline" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.java-ci-pipeline" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.java-ci-pipeline" value="-encoding UTF-8 -source 12 -target 12 ${compiler.args}"/>
+  
+  <property name="java-ci-pipeline.output.dir" value="${module.java-ci-pipeline.basedir}/out/production/java-ci-pipeline"/>
+  <property name="java-ci-pipeline.testoutput.dir" value="${module.java-ci-pipeline.basedir}/out/test/java-ci-pipeline"/>
+  
+  <path id="java-ci-pipeline.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="java-ci-pipeline.module.production.classpath">
+    <path refid="${module.jdk.classpath.java-ci-pipeline}"/>
+    <path refid="library.junit-4.13.classpath"/>
+  </path>
+  
+  <path id="java-ci-pipeline.runtime.production.module.classpath">
+    <pathelement location="${java-ci-pipeline.output.dir}"/>
+    <path refid="library.junit-4.13.classpath"/>
+  </path>
+  
+  <path id="java-ci-pipeline.module.classpath">
+    <path refid="${module.jdk.classpath.java-ci-pipeline}"/>
+    <pathelement location="${java-ci-pipeline.output.dir}"/>
+    <path refid="library.junit-4.13.classpath"/>
+  </path>
+  
+  <path id="java-ci-pipeline.runtime.module.classpath">
+    <pathelement location="${java-ci-pipeline.testoutput.dir}"/>
+    <pathelement location="${java-ci-pipeline.output.dir}"/>
+    <path refid="library.junit-4.13.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.java-ci-pipeline">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.java-ci-pipeline">
+    <patternset refid="excluded.from.module.java-ci-pipeline"/>
+  </patternset>
+  
+  <path id="java-ci-pipeline.module.sourcepath">
+    <dirset dir="${module.java-ci-pipeline.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  <path id="java-ci-pipeline.module.test.sourcepath">
+    <dirset dir="${module.java-ci-pipeline.basedir}">
+      <include name="test"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.java-ci-pipeline" depends="compile.module.java-ci-pipeline.production,compile.module.java-ci-pipeline.tests" description="Compile module java-ci-pipeline"/>
+  
+  <target name="compile.module.java-ci-pipeline.production" depends="register.custom.compilers" description="Compile module java-ci-pipeline; production classes">
+    <mkdir dir="${java-ci-pipeline.output.dir}"/>
+    <javac2 destdir="${java-ci-pipeline.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.java-ci-pipeline}/javac">
+      <compilerarg line="${compiler.args.java-ci-pipeline}"/>
+      <bootclasspath refid="java-ci-pipeline.module.bootclasspath"/>
+      <classpath refid="java-ci-pipeline.module.production.classpath"/>
+      <src refid="java-ci-pipeline.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.java-ci-pipeline"/>
+    </javac2>
+    
+    <copy todir="${java-ci-pipeline.output.dir}">
+      <fileset dir="${module.java-ci-pipeline.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.java-ci-pipeline.tests" depends="register.custom.compilers,compile.module.java-ci-pipeline.production" description="compile module java-ci-pipeline; test classes" unless="skip.tests">
+    <mkdir dir="${java-ci-pipeline.testoutput.dir}"/>
+    <javac2 destdir="${java-ci-pipeline.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.java-ci-pipeline}/javac">
+      <compilerarg line="${compiler.args.java-ci-pipeline}"/>
+      <bootclasspath refid="java-ci-pipeline.module.bootclasspath"/>
+      <classpath refid="java-ci-pipeline.module.classpath"/>
+      <src refid="java-ci-pipeline.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.java-ci-pipeline"/>
+    </javac2>
+    
+    <copy todir="${java-ci-pipeline.testoutput.dir}">
+      <fileset dir="${module.java-ci-pipeline.basedir}/test">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.java-ci-pipeline" description="cleanup module">
+    <delete dir="${java-ci-pipeline.output.dir}"/>
+    <delete dir="${java-ci-pipeline.testoutput.dir}"/>
+  </target>
+</project>
